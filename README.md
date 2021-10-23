@@ -19,8 +19,7 @@
 * pip install sqlalchemy
 * pip install psycopg2-binary
 
-完成後請先 cd 到 Dorm_Service_Backend 並在 terminal 執行以下指令：<br>
-python create_db.py<br>
+完成後請先 cd 到 Dorm_Service_Backend 並在 terminal 執行以下指令：python create_db.py<br>
 執行完成後可以去 Postgresql 確認在 dorm_service 這個 database 內是否已經創建了一個 items table<br>
 創建完成後就可以 run server 了！
 
