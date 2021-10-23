@@ -5,7 +5,7 @@
 ### Postgresql
 現階段的連線都是用 Localhost
 所以沒有辦法共用一個 postgresql 更新資料
-現階段先麻煩大家連線到自己的 local host
+現階段先麻煩大家連線到自己的 local host。
 前置作業如下：
 1. 要先在自己的 postgresql new database (取名為 dorm_service)
 2. 將 Dorm_Service_Backend/database.py 內的 engine 改成自己的密碼
