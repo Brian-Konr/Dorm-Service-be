@@ -3,11 +3,11 @@
 ## Setup
 我是創建虛擬環境 然後在裡面作 pip install。
 不太確定你們需不需要重新 install，如果需要的話，要 install 的 list 如下：
-python -m pip install --upgrade pip 用作更新 pip 到最新版本
-pip install uvicorn
-pip install fastapi
-pip install sqlalchemy
-pip install psycopg2-binary
+* python -m pip install --upgrade pip 用作更新 pip 到最新版本
+* pip install uvicorn
+* pip install fastapi
+* pip install sqlalchemy
+* pip install psycopg2-binary
 
 ## Run the server
 1. 進入虛擬環境
