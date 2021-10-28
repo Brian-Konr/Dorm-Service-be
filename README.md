@@ -24,6 +24,6 @@
 創建完成後就可以 run server 了！
 
 ## Run the server
-1. 進入虛擬環境
+1. 進入虛擬環境：dorm_service-env/Scripts/activate
 2. uvicorn main:app --reload
 3. uvicorn 會替 FastAPI 開啟 server，接著上 localhost:8000/docs，如果可以看到 APIs 就成功了！(所謂的起後端？

@@ -5,8 +5,11 @@ from typing import Optional, List
 from starlette.status import HTTP_200_OK
 from database import SessionLocal
 import models
+import users, services
 
 app = FastAPI()
+app.include_router(users.router)
+app.include_router(services.router)
 
 
 class Item(BaseModel): #serializer
@@ -22,7 +25,9 @@ class Item(BaseModel): #serializer
 
 db = SessionLocal()
 
-
+@app.get("/")
+async def root():
+    return {"message": "Hello Router"}
 @app.get('/items', response_model= List[Item], status_code=200)
 def get_all_items():
     items = db.query(models.Item).all()
