@@ -14,3 +14,9 @@ router = APIRouter(
 async def get_all_services():
     return db.query(models.Item).all()
 
+@router.get("/test")
+async def get_all_services():
+    return db.query(models.Item).all()
+
+
+
