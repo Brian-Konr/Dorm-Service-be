@@ -1,6 +1,6 @@
 # coding: utf-8
 from sqlalchemy import ARRAY, Boolean, CHAR, CheckConstraint, Column, DateTime, Float, ForeignKey, Integer, String, Table, Text, text
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import sessionmaker, relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -112,6 +112,7 @@ class Request(Base):
     requester = relationship('User')
     service = relationship('Service')
     requester_locations = relationship('Location', secondary='kill_cockroach_service_post')
+    dr = relationship('DriveServicePost', backref='re', uselist=False)
 
 
 class DriveServicePost(Request):
@@ -123,6 +124,7 @@ class DriveServicePost(Request):
 
     _from = relationship('Location', primaryjoin='DriveServicePost.from_id == Location.location_id')
     to = relationship('Location', primaryjoin='DriveServicePost.to_id == Location.location_id')
+    # re = relationship('Request', backref='dr')
 
 
 class HeavyliftingServicePost(Request):

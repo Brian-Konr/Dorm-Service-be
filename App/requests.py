@@ -23,7 +23,7 @@ async def read_users():
     return db.query(models.User).all()
 
 
-class Drive(BaseModel): #serializer 從前端接收???
+class Drive(BaseModel): #serializer
     requesterId:     int
     title:           str
     endTime:         str
@@ -52,15 +52,15 @@ async def create_drive(drive: Drive): #接到 名稱: 型別
         reward = drive.reward,
         title = drive.title
     )
-    db.add(new_re)
-    db.commit()
 
     new_drive = models.DriveServicePost(
         request_id = new_re.request_id,
         from_id = drive.fromId,
-        to_id = drive.toId
+        to_id = drive.toId,
+        re = new_re
     )
 
+    db.add(new_re)
     db.add(new_drive)
     db.commit()
 
