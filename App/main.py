@@ -5,11 +5,12 @@ from typing import Optional, List
 from starlette.status import HTTP_200_OK
 from database import SessionLocal
 import models
-import users, services
+import users, services, requests
 
 app = FastAPI()
 app.include_router(users.router)
 app.include_router(services.router)
+app.include_router(requests.router)
 
 
 class Item(BaseModel): #serializer
