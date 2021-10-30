@@ -1,6 +1,10 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, status, HTTPException
+from pydantic import BaseModel #used for producing schemas
 import models
 from database import SessionLocal
+from datetime import datetime
+
+
 
 db = SessionLocal()
 
@@ -18,3 +22,58 @@ async def get_all_requests():
 async def read_users():
     return db.query(models.User).all()
 
+
+class Drive(BaseModel): #serializer 從前端接收???
+    requesterId:     int
+    title:           str
+    endTime:         str
+    actStartTime:    str
+    actEndTime:      str
+    reward:          str
+    description:     str
+    fromId:          int
+    toId:            int
+
+    class Config:
+        orm_mode= True
+
+@router.post('/drive', response_model=Drive, status_code= status.HTTP_201_CREATED)
+async def create_drive(drive: Drive): #接到 名稱: 型別
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    new_re = models.Request(  
+        requester_id = drive.requesterId,
+        service_id = 1,
+        description = drive.description,
+        start_time = now,
+        end_time = drive.endTime,
+        act_start_time = drive.actStartTime,
+        act_end_time = drive.actEndTime,
+        reward = drive.reward,
+        title = drive.title
+        # requester_id = 1,
+        # service_id = 1,
+        # description = "載人",
+        # start_time = "2021-10-30 22:50:00",
+        # end_time = "2021-10-31 22:50:00",
+        # act_start_time = "2021-10-31 22:50:00",
+        # act_end_time = "2021-10-31 22:50:00",
+        # reward = "10000",
+        # title = "sth"
+    )
+    db.add(new_re)
+    db.commit()
+
+    new_drive = models.DriveServicePost(
+        request_id = new_re.request_id,
+        from_id = drive.fromId,
+        to_id = drive.toId
+        # request_id = 16,
+        # from_id = 33,
+        # to_id = 28
+    )
+
+    db.add(new_drive)
+    db.commit()
+
+    return new_drive.request_id
