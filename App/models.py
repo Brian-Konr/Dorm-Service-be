@@ -113,6 +113,9 @@ class Request(Base):
     service = relationship('Service')
     requester_locations = relationship('Location', secondary='kill_cockroach_service_post')
     dr = relationship('DriveServicePost', back_populates='re', uselist=False)
+    hy = relationship('HeavyliftingServicePost', back_populates='re', uselist=False)
+    ki = relationship('KillCockroachServicePost', back_populates='re', uselist=False)
+    ev = relationship('HostEventPost', back_populates='re', uselist=False)
 
 
 class DriveServicePost(Base):
@@ -140,7 +143,18 @@ class HeavyliftingServicePost(Base):
 
     _from = relationship('Location', primaryjoin='HeavyliftingServicePost.from_id == Location.location_id')
     to = relationship('Location', primaryjoin='HeavyliftingServicePost.to_id == Location.location_id')
+    re = relationship('Request', back_populates='hy')
 
+
+class KillCockroachServicePost(Base):
+    __tablename__ = 'kill_cockroach_service_post'
+
+    request_id = Column(ForeignKey('requests.request_id', ondelete='CASCADE'), primary_key=True)
+    requester_location_id = Column(ForeignKey('locations.location_id', ondelete='SET NULL'))
+
+    requester_location = relationship('Location')
+    re = relationship('Request', back_populates='ki')
+    
 
 class HostEventPost(Base):
     __tablename__ = 'host_event_post'
@@ -150,6 +164,7 @@ class HostEventPost(Base):
     location_detail = Column(String(100))
 
     event_location = relationship('Location')
+    re = relationship('Request', back_populates='ev')
 
 
 class UserPoint(Base):
@@ -178,8 +193,9 @@ class Applier(Base):
     request = relationship('Request')
 
 
-t_kill_cockroach_service_post = Table(
-    'kill_cockroach_service_post', metadata,
-    Column('request_id', ForeignKey('requests.request_id', ondelete='CASCADE'), primary_key=True),
-    Column('requester_location_id', ForeignKey('locations.location_id', ondelete='SET NULL'))
-)
+# t_kill_cockroach_service_post = Table(
+#     'kill_cockroach_service_post', metadata,
+#     Column('request_id', ForeignKey('requests.request_id', ondelete='CASCADE'), primary_key=True),
+#     Column('requester_location_id', ForeignKey('locations.location_id', ondelete='SET NULL'))
+# )
+
