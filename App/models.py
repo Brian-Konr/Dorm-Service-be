@@ -172,9 +172,9 @@ class UserPoint(Base):
 
     user_id = Column(ForeignKey('users.user_id', ondelete='CASCADE'), primary_key=True, nullable=False)
     service_id = Column(ForeignKey('service.service_id', ondelete='CASCADE'), primary_key=True, nullable=False)
-    avg_rating = Column(Float, server_default=text("0"))
-    counts = Column(Integer, nullable=False, server_default=text("0"))
-    level_id = Column(ForeignKey('levels.level_id', ondelete='SET DEFAULT'), nullable=False, server_default=text("1"))
+    avg_rating = Column(Float, default=0)
+    counts = Column(Integer, nullable=False, default=0)
+    level_id = Column(ForeignKey('levels.level_id', ondelete='SET DEFAULT'), nullable=False, default=1)
 
     level = relationship('Level')
     service = relationship('Service')

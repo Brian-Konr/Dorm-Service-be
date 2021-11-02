@@ -1,6 +1,7 @@
 from fastapi import APIRouter, status, HTTPException
 import models
 from database import SessionLocal
+from pydantic import BaseModel
 from schemas import User as UserSchema
 
 db = SessionLocal()
@@ -10,9 +11,33 @@ router = APIRouter(
     tags=["users"]
 )
 
-@router.get("/")
-async def read_users():
+class Login(BaseModel): #serializer
+    userName: str
+    password: str
+    class Config:
+        orm_mode= True
+
+@router.get('/') 
+async def get_all_users():
     return db.query(models.User).all()
+
+@router.get("/{user_id}")
+async def get_specific_user(user_id: int):
+    q = db.query(models.User).filter(models.User.user_id == user_id)
+    if q.count():
+        return db.query(models.User).filter(models.User.user_id == user_id).first()
+    else:
+        raise HTTPException(status_code=404, detail="User id not found in User list")
+
+@router.post("/login") #The reason I use post is because get cannot have a request body, and I didn't know how to handle this situation.
+async def test_login(login: Login):
+    q = db.query(models.User).filter(models.User.user_name == login.userName, models.User.password == login.password)
+    if q.count():
+        user = db.query(models.User).filter(models.User.user_name == login.userName, models.User.password == login.password).first()
+        return user.user_id
+    else:
+        raise HTTPException(status_code=404, detail="The combination of username and password not found in User list")
+
 
 @router.post("/", status_code= status.HTTP_201_CREATED)
 async def create_new_user(user: UserSchema):
@@ -30,7 +55,18 @@ async def create_new_user(user: UserSchema):
     else:
         db.add(newUser)
         db.commit()
-        return "user created successfully"
+        serviceId = 1
+        while(serviceId < 5):
+            newUserInputEntry = models.UserPoint(
+                user_id = newUser.user_id,
+                service_id = serviceId,
+            )
+            db.add(newUserInputEntry)
+            db.commit()
+            serviceId += 1
+
+        return newUser.user_id
+
 
 
 
