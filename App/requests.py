@@ -1,3 +1,5 @@
+from sqlalchemy.sql.expression import false
+from sqlalchemy.sql.operators import exists
 from fastapi import APIRouter, status, HTTPException
 from pydantic import BaseModel #used for producing schemas
 import models
@@ -202,3 +204,39 @@ async def create_event(item: Event): #接到 名稱: 型別
 
     return new_re.request_id
 
+# @router.get("/{request_id}")
+# async def get_a_request(request_id: int):
+#     return db.query(models.Request).filter(models.Request.request_id == request_id).all()
+
+@router.get("/drive/{request_id}")
+async def get_a_drive_request(request_id: int):
+    q = db.query(models.DriveServicePost).filter(models.DriveServicePost.request_id == request_id)
+    if q.count():
+        return db.query(models.DriveServicePost, models.Request).filter(models.Request.request_id == request_id, models.DriveServicePost.request_id == request_id).all()
+    else:
+        raise HTTPException(status_code=404, detail="Request id not found in Drive Service Post")
+    
+
+@router.get("/heavyLifting/{request_id}")
+async def get_a_heavyLifting_request(request_id: int):
+    q = db.query(models.HeavyliftingServicePost).filter(models.HeavyliftingServicePost.request_id == request_id)
+    if q.count():
+        return db.query(models.HeavyliftingServicePost, models.Request).filter(models.Request.request_id == request_id, models.HeavyliftingServicePost.request_id == request_id).all()
+    else:
+        raise HTTPException(status_code=404, detail="Request id not found in Heavy lifting Service Post")
+
+@router.get("/kill/{request_id}")
+async def get_a_kill_request(request_id: int):
+    q = db.query(models.KillCockroachServicePost).filter(models.KillCockroachServicePost.request_id == request_id)
+    if q.count():
+        return db.query(models.KillCockroachServicePost, models.Request).filter(models.Request.request_id == request_id, models.KillCockroachServicePost.request_id == request_id).all()
+    else:
+        raise HTTPException(status_code=404, detail="Request id not found in Kill Cockroach Service Post")
+
+@router.get("/hostEvent/{request_id}")
+async def get_a_hostEvent_request(request_id: int):
+    q = db.query(models.HostEventPost).filter(models.HostEventPost.request_id == request_id)
+    if q.count():
+        return db.query(models.HostEventPost, models.Request).filter(models.Request.request_id == request_id, models.HostEventPost.request_id == request_id).all()
+    else:
+        raise HTTPException(status_code=404, detail="Request id not found in Host Event Post")
