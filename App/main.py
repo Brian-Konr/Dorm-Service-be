@@ -6,13 +6,23 @@ from starlette.status import HTTP_200_OK
 from database import SessionLocal
 import models
 import users, services, requests
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 app.include_router(users.router)
 app.include_router(services.router)
 app.include_router(requests.router)
 
-
+origins = [
+    "http://localhost:3000"
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins = origins,
+    allow_credentials = True,
+    allow_methods = ["*"],
+    allow_headers = ["*"]
+)
 class Item(BaseModel): #serializer
     id: int
     name: str
