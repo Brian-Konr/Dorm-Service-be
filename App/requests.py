@@ -244,3 +244,48 @@ async def get_a_hostEvent_request(request_id: int):
 @router.get("/available")
 async def get_all_available_requests():
     return db.query(models.Request).filter(models.Request.end_time >= datetime.now()).all()
+
+
+
+class Request_Applier(BaseModel): #serializer
+    requestId:      int
+    applierId:      int
+
+    class Config:
+        orm_mode= True
+
+@router.patch("/accept", status_code = status.HTTP_200_OK)
+async def accept_request(item: Request_Applier):
+    requestId = item.requestId
+    applierId = item.applierId
+
+    item_to_update = db.query(models.Applier).filter(models.Applier.request_id == requestId, models.Applier.applier_id == applierId)
+
+    if item_to_update.count():
+        item_to_update.first().status = 1
+        db.add(item_to_update.first())
+        db.commit()
+
+        updated_item = db.query(models.Applier).filter(models.Applier.request_id == requestId, models.Applier.applier_id == applierId).first()
+        return updated_item
+    
+    else:
+        raise HTTPException(status_code=404, detail="Application data not in Appliers table")
+
+@router.patch("/refuse", status_code = status.HTTP_200_OK)
+async def refuse_request(item: Request_Applier):
+    requestId = item.requestId
+    applierId = item.applierId
+
+    item_to_update = db.query(models.Applier).filter(models.Applier.request_id == requestId, models.Applier.applier_id == applierId)
+
+    if item_to_update.count():
+        item_to_update.first().status = 2
+        db.add(item_to_update.first())
+        db.commit()
+
+        updated_item = db.query(models.Applier).filter(models.Applier.request_id == requestId, models.Applier.applier_id == applierId).first()
+        return updated_item
+    
+    else:
+        raise HTTPException(status_code=404, detail="Application data not in Appliers table")
