@@ -17,6 +17,20 @@ class Login(BaseModel): #serializer
     class Config:
         orm_mode= True
 
+class Point(BaseModel):
+    service_id: int
+    avg_rating: float
+    counts: int
+    level_id: int
+class UserInfo(BaseModel):
+    userId: int
+    userName: str
+    gender: str
+    phoneNum: str
+    fbUrl: str
+    dormId: str
+    userPoints: list
+
 @router.get('/') 
 async def get_all_users():
     return db.query(models.User).all()
@@ -25,7 +39,29 @@ async def get_all_users():
 async def get_specific_user(user_id: int):
     q = db.query(models.User).filter(models.User.user_id == user_id)
     if q.count():
-        return db.query(models.User).filter(models.User.user_id == user_id).first()
+        user = db.query(models.User).filter(models.User.user_id == user_id).first()
+        serviceCount = 1
+        list = []
+        while(serviceCount < 5):
+            pointInfo = db.query(models.UserPoint).filter(models.UserPoint.user_id == user.user_id, models.UserPoint.service_id == serviceCount).first()
+            list.append(Point(
+                service_id = pointInfo.service_id,
+                avg_rating = pointInfo.avg_rating,
+                counts = pointInfo.counts,
+                level_id = pointInfo.level_id
+            ))
+            serviceCount += 1
+
+        user_info = UserInfo(
+            userId = user.user_id,
+            userName = user.user_name,
+            gender = user.gender,
+            phoneNum = user.phone_num,
+            fbUrl = user.fb_url,
+            dormId = user.dorm_id,
+            userPoints = list
+        )
+        return user_info
     else:
         raise HTTPException(status_code=404, detail="User id not found in User list")
 
