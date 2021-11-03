@@ -240,3 +240,7 @@ async def get_a_hostEvent_request(request_id: int):
         return db.query(models.HostEventPost, models.Request).filter(models.Request.request_id == request_id, models.HostEventPost.request_id == request_id).all()
     else:
         raise HTTPException(status_code=404, detail="Request id not found in Host Event Post")
+
+@router.get("/available")
+async def get_all_available_requests():
+    return db.query(models.Request).filter(models.Request.end_time >= datetime.now()).all()
