@@ -14,14 +14,15 @@ app.include_router(services.router)
 app.include_router(requests.router)
 
 origins = [
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "http://localhost"
 ]
 app.add_middleware(
     CORSMiddleware,
     allow_origins = origins,
     allow_credentials = True,
     allow_methods = ["*"],
-    allow_headers = ["*"]
+    allow_headers = ["*"],
 )
 class Item(BaseModel): #serializer
     id: int
