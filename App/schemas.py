@@ -7,7 +7,7 @@ class User(BaseModel):
     gender: str
     phoneNum: str
     fbUrl: str
-    dormID: str
+    dormID: int
 
     class Config:
         orm_mode= True

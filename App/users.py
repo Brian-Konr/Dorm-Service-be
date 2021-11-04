@@ -87,7 +87,7 @@ async def create_new_user(user: UserSchema):
     )
     db_name_exist = db.query(models.User).filter(newUser.user_name == models.User.user_name).first()
     if db_name_exist is not None:
-        raise HTTPException(status_code=400, detail="User name already exists")
+        raise HTTPException(status_code=404, detail="User name already exists")
     else:
         db.add(newUser)
         db.commit()
