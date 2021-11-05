@@ -28,7 +28,7 @@ class Apply(BaseModel): #serializer
     class Config:
         orm_mode= True
 
-@router.post('/apply/', status_code= status.HTTP_201_CREATED)
+@router.post('/apply', status_code= status.HTTP_201_CREATED)
 async def make_a_application(item: Apply):
 
     new_applier = models.Applier(  
