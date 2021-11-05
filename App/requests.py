@@ -1,3 +1,4 @@
+import requests
 from sqlalchemy.sql.expression import false
 from sqlalchemy.sql.operators import exists
 from fastapi import APIRouter, status, HTTPException
@@ -85,7 +86,7 @@ class Heavy(BaseModel): #serializer
         orm_mode= True
 
 @router.post('/heavyLifting', status_code= status.HTTP_201_CREATED)
-async def create_drive(item: Heavy): #接到 名稱: 型別
+async def create_heavyLifting(item: Heavy): #接到 名稱: 型別
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     new_re = models.Request(  
@@ -245,6 +246,9 @@ async def get_a_hostEvent_request(request_id: int):
 async def get_all_available_requests():
     return db.query(models.Request).filter(models.Request.end_time >= datetime.now()).all()
 
+@router.get("/{applier_id}")
+async def get_all_requests_and_status_for_this_applier(applier_id: int):
+    return db.query(models.Applier.status, models.Request).filter(models.Applier.applier_id == applier_id).all()
 
 
 class Request_Applier(BaseModel): #serializer
