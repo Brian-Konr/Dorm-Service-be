@@ -27,3 +27,10 @@ async def get_specific_classId_location(classId: int):
     else:
         raise HTTPException(status_code=404, detail="Class id not found in User list")
 
+@router.get("/class/")
+async def get_all_location_class_info():
+    return db.query(models.LocationClas).all()
+
+@router.get("/dormitory/")
+async def get_all_dormitory_info():
+    return db.query(models.Dormitory).all()

@@ -293,3 +293,234 @@ async def refuse_request(item: Request_Applier):
     
     else:
         raise HTTPException(status_code=404, detail="Application data not in Appliers table")
+
+
+@router.get("/history/{user_id}")
+async def get_history_posts_of_a_user(user_id: int):
+    q = db.query(models.Request).filter(models.Request.requester_id == user_id)
+    if q.count():
+        return q.all()
+    else:
+        raise HTTPException(status_code=404, detail="History request not found")
+
+@router.get("/ongoing/{requesterId}")
+async def get_ongoing_requests_of_a_user(requesterId: int):
+    now = datetime.now()
+    q = db.query(models.Request).filter(models.Request.requester_id == requesterId, models.Request.end_time > now)
+    if q.count():
+        return q.all()
+    else:
+        raise HTTPException(status_code=404, detail="Ongoing request not found")
+
+class Drive_revised(BaseModel): #serializer
+    requestId:       int
+    title:           str
+    endTime:         str
+    actStartTime:    str
+    actEndTime:      str
+    reward:          str
+    description:     str
+    fromId:          int
+    toId:            int
+
+    class Config:
+        orm_mode= True
+
+@router.patch("/revise/drive/", status_code = status.HTTP_200_OK)
+async def revise_drive_request(item: Drive_revised):
+    requestId = item.requestId
+    title = item.title
+    endTime = item.endTime
+    actStartTime = item.actStartTime
+    actEndTime = item.actEndTime
+    reward = item.reward
+    description = item.description
+    fromId = item.fromId
+    toId = item.toId
+
+    re_to_update = db.query(models.Request).filter(models.Request.request_id == requestId)
+
+    if re_to_update.count():
+        re_to_update.first().title = title
+        re_to_update.first().end_time = endTime
+        re_to_update.first().act_start_time = actStartTime
+        re_to_update.first().act_end_time = actEndTime
+        re_to_update.first().reward = reward
+        re_to_update.first().description = description
+
+        db.add(re_to_update.first())
+        db.commit()
+
+        dr_to_update = db.query(models.DriveServicePost).filter(models.DriveServicePost.request_id == requestId)
+        dr_to_update.first().from_id = fromId
+        dr_to_update.first().to_id = toId
+
+        db.add(dr_to_update.first())
+        db.commit()
+
+        return
+    
+    else:
+        raise HTTPException(status_code=404, detail="Request Not Found.")
+
+
+class Heavy_revised(BaseModel): #serializer
+    requestId:       int
+    title:           str
+    endTime:         str
+    actStartTime:    str
+    actEndTime:      str
+    reward:          str
+    description:     str
+    fromId:          int
+    fromFloor:       int
+    toId:            int
+    toFloor:         int
+    item:            str
+    itemWeight:      str
+
+    class Config:
+        orm_mode= True
+
+@router.patch("/revise/heavyLifting/", status_code = status.HTTP_200_OK)
+async def revise_drive_request(item: Heavy_revised):
+    requestId = item.requestId
+    title = item.title
+    endTime = item.endTime
+    actStartTime = item.actStartTime
+    actEndTime = item.actEndTime
+    reward = item.reward
+    description = item.description
+    fromId = item.fromId
+    fromFloor = item.fromFloor
+    toId = item.toId
+    toFloor = item.toFloor
+    itemN = item.item
+    itemWeight = item.itemWeight
+
+
+    re_to_update = db.query(models.Request).filter(models.Request.request_id == requestId)
+
+    if re_to_update.count():
+        re_to_update.first().title = title
+        re_to_update.first().end_time = endTime
+        re_to_update.first().act_start_time = actStartTime
+        re_to_update.first().act_end_time = actEndTime
+        re_to_update.first().reward = reward
+        re_to_update.first().description = description
+
+        db.add(re_to_update.first())
+        db.commit()
+
+        hy_to_update = db.query(models.HeavyliftingServicePost).filter(models.HeavyliftingServicePost.request_id == requestId)
+        hy_to_update.first().from_id = fromId
+        hy_to_update.first().from_floor = fromFloor
+        hy_to_update.first().to_id = toId
+        hy_to_update.first().to_floor = toFloor
+        hy_to_update.first().item = itemN
+        hy_to_update.first().item_weight = itemWeight
+
+        db.add(hy_to_update.first())
+        db.commit()
+
+        return
+    
+    else:
+        raise HTTPException(status_code=404, detail="Request Not Found.")
+
+class Kill_revised(BaseModel): #serializer
+    requestId:       int
+    title:           str
+    endTime:         str
+    actStartTime:    str
+    actEndTime:      str
+    reward:          str
+    description:     str
+    requesterLocationId:   int
+
+    class Config:
+        orm_mode= True
+
+@router.patch("/revise/kill/", status_code = status.HTTP_200_OK)
+async def revise_kill_cockroach_request(item: Kill_revised):
+    requestId = item.requestId
+    title = item.title
+    endTime = item.endTime
+    actStartTime = item.actStartTime
+    actEndTime = item.actEndTime
+    reward = item.reward
+    description = item.description
+    requesterLocationId = item.requesterLocationId
+
+    re_to_update = db.query(models.Request).filter(models.Request.request_id == requestId)
+
+    if re_to_update.count():
+        re_to_update.first().title = title
+        re_to_update.first().end_time = endTime
+        re_to_update.first().act_start_time = actStartTime
+        re_to_update.first().act_end_time = actEndTime
+        re_to_update.first().reward = reward
+        re_to_update.first().description = description
+
+        db.add(re_to_update.first())
+        db.commit()
+
+        ki_to_update = db.query(models.KillCockroachServicePost).filter(models.KillCockroachServicePost.request_id == requestId)
+        ki_to_update.first().requester_location_id = requesterLocationId
+
+        db.add(ki_to_update.first())
+        db.commit()
+
+        return
+    
+    else:
+        raise HTTPException(status_code=404, detail="Request Not Found.")
+
+
+class Event_revised(BaseModel): #serializer
+    requestId:       int
+    title:           str
+    endTime:         str
+    actStartTime:    str
+    actEndTime:      str
+    description:     str
+    eventLocationId: int
+    locationDetail:  str  
+
+    class Config:
+        orm_mode= True
+
+@router.patch("/revise/hostEvent/", status_code = status.HTTP_200_OK)
+async def revise_event_request(item: Event_revised):
+    requestId = item.requestId
+    title = item.title
+    endTime = item.endTime
+    actStartTime = item.actStartTime
+    actEndTime = item.actEndTime
+    description = item.description
+    eventLocationId = item.eventLocationId
+    locationDetail = item.locationDetail
+
+    re_to_update = db.query(models.Request).filter(models.Request.request_id == requestId)
+
+    if re_to_update.count():
+        re_to_update.first().title = title
+        re_to_update.first().end_time = endTime
+        re_to_update.first().act_start_time = actStartTime
+        re_to_update.first().act_end_time = actEndTime
+        re_to_update.first().description = description
+
+        db.add(re_to_update.first())
+        db.commit()
+
+        ev_to_update = db.query(models.HostEventPost).filter(models.HostEventPost.request_id == requestId)
+        ev_to_update.first().event_location_id = eventLocationId
+        ev_to_update.first().location_detail = locationDetail
+
+        db.add(ev_to_update.first())
+        db.commit()
+
+        return
+    
+    else:
+        raise HTTPException(status_code=404, detail="Request Not Found.")
