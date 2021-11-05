@@ -36,7 +36,9 @@ async def make_a_application(item: Apply):
         request_id = item.requestId,
         status = 0
     )
-
+    db_apply_exist = db.query(models.Applier).filter(new_applier.applier_id == models.Applier.applier_id, new_applier.request_id == models.Applier.request_id).first()
+    if db_apply_exist is not None:
+        raise HTTPException(status_code=404, detail="Apply already exists")
     db.add(new_applier)
     db.commit()
 
