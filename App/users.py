@@ -148,7 +148,7 @@ async def rate_request(item: Rate):
         # 更新 user points
         user_points.avg_rating = avg
         user_points.counts += 1
-        levels = db.query(models.Level.level_id).filter(avg > models.Level.rating_threshold, user_points.counts > models.Level.count_threshold).all()
+        levels = db.query(models.Level.level_id).filter(avg >= models.Level.rating_threshold, user_points.counts >= models.Level.count_threshold).all()
 
         max_level = 1
         for i in range(len(levels)):
