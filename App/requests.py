@@ -310,7 +310,7 @@ async def get_ongoing_requests_of_a_user(requesterId: int):
     if q.count():
         return q.all()
     else:
-        raise HTTPException(status_code=404, detail="History request not found")
+        raise HTTPException(status_code=404, detail="Ongoing request not found")
 
 class Drive_revised(BaseModel): #serializer
     requestId:       int
