@@ -3,6 +3,7 @@ import models
 from database import SessionLocal
 from pydantic import BaseModel
 from schemas import User as UserSchema
+from sqlalchemy.sql import func
 
 db = SessionLocal()
 
@@ -102,6 +103,66 @@ async def create_new_user(user: UserSchema):
             serviceId += 1
 
         return newUser.user_id
+
+class Rate(BaseModel): #serializer
+    requestId:      int  
+    applierId:      int  # 對哪一個applier 評分
+    score:          int
+
+    class Config:
+        orm_mode= True
+
+@router.patch("/rateRequest", status_code = status.HTTP_200_OK)
+async def rate_request(item: Rate):
+    requestId = item.requestId
+    applierId = item.applierId
+    score = item.score
+
+    q = db.query(models.Applier).filter(models.Applier.request_id == requestId, models.Applier.applier_id == applierId)
+
+    if q.count():
+        applier = q.first()
+        applier.rating = score
+        # db.add(applier)
+        # db.commit()
+        
+        
+        serviceId = db.query(models.Request).filter(models.Request.request_id == applier.request_id).first().service_id
+
+        
+        # 計算平均
+        rating_array = db.query(models.Applier.rating).\
+            join(models.Request, models.Request.request_id == models.Applier.request_id).\
+            filter( models.Applier.applier_id == applierId, models.Request.service_id == serviceId).all()
+        
+        total = 0
+        for i in range(len(rating_array)):
+            total += rating_array[i].rating
+        avg = total / len(rating_array)
+        
+        
+
+        # get user points 資料
+        user_points = db.query(models.UserPoint).filter(models.UserPoint.service_id == serviceId, models.UserPoint.user_id == applierId).first()
+        
+        # 更新 user points
+        user_points.avg_rating = avg
+        user_points.counts += 1
+        levels = db.query(models.Level.level_id).filter(avg > models.Level.rating_threshold, user_points.counts > models.Level.count_threshold).all()
+
+        max_level = 1
+        for i in range(len(levels)):
+            if max_level < levels[i].level_id:
+                max_level = levels[i].level_id
+        user_points.level_id = max_level
+        db.add(applier, user_points)
+        db.commit()
+        
+        return "rated successfully"
+    
+    else:
+        raise HTTPException(status_code=404, detail="Application data not in Appliers table")
+
 
 
 
