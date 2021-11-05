@@ -5,13 +5,14 @@ from typing import Optional, List
 from starlette.status import HTTP_200_OK
 from database import SessionLocal
 import models
-import users, services, requests, locations
+import users, services, requests, locations, appliers
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 app.include_router(users.router)
 app.include_router(services.router)
 app.include_router(requests.router)
+app.include_router(appliers.router)
 app.include_router(locations.router)
 origins = [
     "http://localhost:3000",
