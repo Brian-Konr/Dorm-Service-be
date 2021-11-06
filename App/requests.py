@@ -526,8 +526,8 @@ async def revise_event_request(item: Event_revised):
         raise HTTPException(status_code=404, detail="Request Not Found.")
 
 
-@router.patch("/stop/drive/{request_id}", status_code = status.HTTP_200_OK)
-async def stop_drive_request(request_id: int):
+@router.patch("/stop/{request_id}", status_code = status.HTTP_200_OK)
+async def stop_request(request_id: int):
     re_to_update = db.query(models.Request).filter(models.Request.request_id == request_id)
 
     if re_to_update.count():
@@ -536,47 +536,5 @@ async def stop_drive_request(request_id: int):
         db.add(re_to_update.first())
         db.commit()
         return
-    else:
-        raise HTTPException(status_code=404, detail="Request Not Found.")
-
-@router.patch("/stop/heavyLifting/{request_id}", status_code = status.HTTP_200_OK)
-async def stop_drive_request(request_id: int):
-    re_to_update = db.query(models.Request).filter(models.Request.request_id == request_id)
-
-    if re_to_update.count():
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        re_to_update.first().end_time = now
-        db.add(re_to_update.first())
-        db.commit()
-        return
-    
-    else:
-        raise HTTPException(status_code=404, detail="Request Not Found.")
-
-@router.patch("/stop/kill/{request_id}", status_code = status.HTTP_200_OK)
-async def stop_kill_cockroach_request(request_id: int):
-    re_to_update = db.query(models.Request).filter(models.Request.request_id == request_id)
-
-    if re_to_update.count():
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        re_to_update.first().end_time = now
-        db.add(re_to_update.first())
-        db.commit()
-        return
-    
-    else:
-        raise HTTPException(status_code=404, detail="Request Not Found.")
-
-@router.patch("/stop/hostEvent/{request_id}", status_code = status.HTTP_200_OK)
-async def stop_event_request(request_id: int):
-    re_to_update = db.query(models.Request).filter(models.Request.request_id == request_id)
-
-    if re_to_update.count():
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        re_to_update.first().end_time = now
-        db.add(re_to_update.first())
-        db.commit()
-        return
-    
     else:
         raise HTTPException(status_code=404, detail="Request Not Found.")
