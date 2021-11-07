@@ -299,7 +299,7 @@ async def refuse_request(item: Request_Applier):
 
 @router.get("/history/{user_id}")
 async def get_history_posts_of_a_user(user_id: int):
-    q = db.query(models.Request).filter(models.Request.requester_id == user_id, models.Request.end_time >= datetime.now())
+    q = db.query(models.Request).filter(models.Request.requester_id == user_id, models.Request.end_time <= datetime.now())
     if q.count():
         return q.all()
     else:
