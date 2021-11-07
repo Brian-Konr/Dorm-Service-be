@@ -34,3 +34,11 @@ async def get_all_location_class_info():
 @router.get("/dormitory/")
 async def get_all_dormitory_info():
     return db.query(models.Dormitory).all()
+
+@router.get("/info/{locationId}")
+async def get_specific_location_info(locationId: int):
+    q = db.query(models.Location).filter(models.Location.location_id == locationId)
+    if q.count():
+        return q.first()
+    else:
+        raise HTTPException(status_code=404, detail="Location id not found in User list")
