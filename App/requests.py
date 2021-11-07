@@ -248,7 +248,9 @@ async def get_all_available_requests():
 
 @router.get("/{applier_id}")
 async def get_all_requests_and_status_for_this_applier(applier_id: int):
-    return db.query(models.Applier.status, models.Request).filter(models.Applier.applier_id == applier_id).all()
+    return db.query(models.Applier.status, models.Request).\
+        join(models.Applier, models.Request.request_id == models.Applier.request_id ).\
+        filter(models.Applier.applier_id == applier_id, models.Request.act_end_time >= datetime.now()).all()
 
 
 class Request_Applier(BaseModel): #serializer
